@@ -19,3 +19,5 @@ tmp
 .ruby-gemset
 .ruby-version
 .rvmrc
+wercker.yml
+integration-test/
