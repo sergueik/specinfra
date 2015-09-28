@@ -24,6 +24,10 @@ class Specinfra::Command::Windows::Base::RegistryKey < Specinfra::Command::Windo
       cmd = "(Compare-Object (Get-Item 'Registry::#{key_name}').GetValue('#{key_property[:name]}') #{value}) -eq $null"
       create_command cmd
     end
+    def check_has_propertyvaluecontaining(key_name, key_property)
+      cmd = "(Get-Item 'Registry::#{key_name}').GetValue('#{key_property[:name]}') -match '#{key_property[:value]}'"
+      create_command cmd
+    end
 
     private
     def do_not_convert?(key_type)
