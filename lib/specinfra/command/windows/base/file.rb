@@ -35,6 +35,13 @@ class Specinfra::Command::Windows::Base::File < Specinfra::Command::Windows::Bas
       end
     end
 
+    def check_is_symlink(file)
+      cmd = item_has_attribute file, 'ReparsePoint'
+      Backend::PowerShell::Command.new do
+        exec cmd
+      end
+    end
+
     def get_content(file)
       %Q!Get-Content("#{file}") | Out-String!
     end
