@@ -32,18 +32,6 @@ class Specinfra::Command::Windows::Base::Service < Specinfra::Command::Windows::
       $selector = "| Where-Object { -not (($_.StartName -match 'NT AUTHORITY') -or ( $_.StartName -match 'NT SERVICE') -or ($_.StartName -match 'NetworkService' ) -or ($_.StartName -match 'LocalSystem' ))"
     end
 
-    def check_has_property(service,property,value=nil)
-      Backend::PowerShell::Command.new do
-        using 'find_service.ps1'
-        if value
-          exec "((FindService -name '#{service}').'#{property}' -ne $null)"
-        else
-          exec "((FindService -name '#{service}').'#{property}' -match '#{value}')"
-          # exec "((FindService -name '#{service}')| ConvertTo-Json) -replace '\\r?\\n', ' ' "
-        end 
-      end
-    end
-    
     def my_get_property(service, property = nil)
       Backend::PowerShell::Command.new do
         using 'find_service.ps1'
@@ -59,6 +47,7 @@ class Specinfra::Command::Windows::Base::Service < Specinfra::Command::Windows::
         command = []
         property.keys.each do |key|
           value= property[key]
+          # command << "((FindService -name '#{service}').'#{key}' -match '#{value}')"
           command << "(FindService -name '#{service}').#{key} -eq '#{value}'"
         end
         executable = command.join(' -and ')
