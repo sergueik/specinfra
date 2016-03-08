@@ -6,6 +6,8 @@ module Specinfra
         :env,
         :path,
         :shell,
+        :interactive_shell,
+        :login_shell,
         :pre_command,
         :stdout,
         :stderr,
@@ -29,7 +31,7 @@ module Specinfra
       end
 
       # Define os method explicitly to avoid stack level
-      # too deep caused by Helpet::DetectOS#os
+      # too deep caused by Helper::DetectOS#os
       def os(value=nil)
         @os = value if value
         if @os.nil? && defined?(RSpec) && RSpec.configuration.respond_to?(:os)

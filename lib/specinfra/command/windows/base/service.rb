@@ -27,6 +27,7 @@ class Specinfra::Command::Windows::Base::Service < Specinfra::Command::Windows::
         exec "(FindService -name '#{service}').State -eq 'Running'"
       end
     end
+
     def check_service_is_running_under_localsystem
       $selector = "| Where-Object { -not (($_.StartName -match 'NT AUTHORITY') -or ( $_.StartName -match 'NT SERVICE') -or ($_.StartName -match 'NetworkService' ) -or ($_.StartName -match 'LocalSystem' ))"
     end
@@ -43,7 +44,7 @@ class Specinfra::Command::Windows::Base::Service < Specinfra::Command::Windows::
       end
     end
     
-    def get_property(service, property = nil)
+    def my_get_property(service, property = nil)
       Backend::PowerShell::Command.new do
         using 'find_service.ps1'
         if property 
@@ -51,6 +52,26 @@ class Specinfra::Command::Windows::Base::Service < Specinfra::Command::Windows::
         else
           (exec "((FindService -name '#{service}')| ConvertTo-Json) -replace '\\r?\\n', ' '").stdout
         end 
+      end
+    end
+
+    def check_has_property(service, property)
+        command = []
+        property.keys.each do |key|
+          value= property[key]
+          command << "(FindService -name '#{service}').#{key} -eq '#{value}'"
+        end
+        executable = command.join(' -and ')
+        Backend::PowerShell::Command.new do
+          using 'find_service.ps1'
+          exec executable
+        end
+    end
+    
+    def get_property(service)
+      Backend::PowerShell::Command.new do
+        using 'find_service.ps1'
+        exec "(FindService -name '#{service}') | Select-Object *"
       end
     end
   end
